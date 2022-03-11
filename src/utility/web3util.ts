@@ -2,6 +2,7 @@ import { InjectedConnector } from '@web3-react/injected-connector'
 import { ethers } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 import BondTokenFactoryAbi from '../config/abi/BondTokenFactory.json'
+import BondMakerAbi from '../config/abi/BondMaker.json'
 import Web3 from 'web3'
 import contracts from '../config/constants/contracts'
 
@@ -35,4 +36,10 @@ export const getBondTokenFactoryContract = (signer: ethers.Signer|ethers.provide
   console.log("getBondTokenFactoryContract")
   console.log(signer)
   return getContract(BondTokenFactoryAbi, contracts.bondTokenFactory[RINKEBY], signer)
+}
+
+export const getBondMakerContract = (signer: ethers.Signer|ethers.providers.Provider) : ethers.Contract => {
+  console.log("getBondMakerContract")
+  console.log(signer)
+  return getContract(BondMakerAbi, contracts.bondMaker[RINKEBY], signer)
 }
