@@ -5,6 +5,8 @@ import { Table, Dropdown } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import LoadingOverlay from "react-loading-overlay";
 import { BeatLoader } from "react-spinners";
+import { useWeb3React } from "@web3-react/core"
+import { injected } from "./utility/web3util"
 import "./App.css";
 
 const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
@@ -12,6 +14,8 @@ const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 2.5% Maturity June 2030"];
 
 function App() {
+  const { active, account, activate, deactivate } = useWeb3React()
+
 	const [address, setAddress] = useState<string>("");
 	const [investAmountToAdd, setInvestAmountToAdd] = useState<string>("");
 	const [showOverlay, setShowOverlay] = useState<boolean>(false);
@@ -97,6 +101,22 @@ function App() {
     })
     setSelectedBondItem(selectedBondItem)
     setSelectedBondIndex(selectedIndex);
+  }
+
+  async function connect() {
+    try {
+      await activate(injected)
+    } catch (ex) {
+      console.log(ex)
+    }
+  }
+
+  async function disconnect() {
+    try {
+      deactivate()
+    } catch (ex) {
+      console.log(ex)
+    }
   }
 
 	return (
@@ -186,6 +206,26 @@ function App() {
 							</Container>
 						</Col>
 					</Row>
+          <Row>
+            <Container>
+              <Col>
+                <Container className="section">
+                  <div className="section">
+                    <Button onClick={connect} className="bg-blue-600 ">Connect to MetaMask</Button>
+                    {active ? <span>Connected with <b>{account}</b></span> : <span>Not connected</span>}
+                  </div>
+                </Container>
+              </Col>
+              <Col>
+                <Container className="section">
+                  <div className="section">
+                    <Button onClick={disconnect} className="bg-blue-600 ">Disconnect
+                    </Button>
+                  </div>
+                </Container>
+              </Col>
+            </Container>
+          </Row>
         </Container>
 			</div>
 		</LoadingOverlay>
