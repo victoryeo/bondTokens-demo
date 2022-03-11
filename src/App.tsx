@@ -6,7 +6,9 @@ import Button from "react-bootstrap/Button";
 import LoadingOverlay from "react-loading-overlay";
 import { BeatLoader } from "react-spinners";
 import { useWeb3React } from "@web3-react/core"
-import { injected } from "./utility/web3util"
+import { Web3Provider } from '@ethersproject/providers'
+import { injected, getBondTokenFactoryContract } from "./utility/web3util"
+import { simpleRpcProvider } from './utility/providers'
 import "./App.css";
 
 const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
@@ -14,7 +16,7 @@ const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 2.5% Maturity June 2030"];
 
 function App() {
-  const { active, account, library, activate, deactivate } = useWeb3React()
+  const { active, account, library, activate, deactivate } = useWeb3React<Web3Provider>()
 
 	const [address, setAddress] = useState<string>("");
 	const [investAmountToAdd, setInvestAmountToAdd] = useState<string>("");
@@ -59,6 +61,14 @@ function App() {
 
 	useEffect(() => {
     setBondInfo();
+
+    if (library == undefined) {
+      console.log("library undefined")
+      const contract = getBondTokenFactoryContract(simpleRpcProvider)
+    } else {
+      console.log("library.signer")
+      const contract = getBondTokenFactoryContract(library.getSigner())
+    }
 	}, []);
 
 	const btnAddOnClick = async () => {
