@@ -14,7 +14,7 @@ const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 2.5% Maturity June 2030"];
 
 function App() {
-  const { active, account, activate, deactivate } = useWeb3React()
+  const { active, account, library, activate, deactivate } = useWeb3React()
 
 	const [address, setAddress] = useState<string>("");
 	const [investAmountToAdd, setInvestAmountToAdd] = useState<string>("");
