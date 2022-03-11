@@ -7,7 +7,9 @@ import LoadingOverlay from "react-loading-overlay";
 import { BeatLoader } from "react-spinners";
 import { useWeb3React } from "@web3-react/core"
 import { Web3Provider } from '@ethersproject/providers'
-import { injected, getBondTokenFactoryContract } from "./utility/web3util"
+import { ethers } from 'ethers'
+import { injected, getBondTokenFactoryContract,
+  getBondMakerContract } from "./utility/web3util"
 import { simpleRpcProvider } from './utility/providers'
 import "./App.css";
 
@@ -64,10 +66,14 @@ function App() {
 
     if (library == undefined) {
       console.log("library undefined")
-      const contract = getBondTokenFactoryContract(simpleRpcProvider)
+      const contractBTFactory = getBondTokenFactoryContract(simpleRpcProvider)
+      console.log(contractBTFactory)
+      const contractBM : ethers.Contract = getBondMakerContract(simpleRpcProvider)
+      console.log(contractBM)
     } else {
       console.log("library.signer")
-      const contract = getBondTokenFactoryContract(library.getSigner())
+      const contractBTFactory = getBondTokenFactoryContract(library.getSigner())
+      const contractBM = getBondMakerContract(library.getSigner())
     }
 	}, []);
 
