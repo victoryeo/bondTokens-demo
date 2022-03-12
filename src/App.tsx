@@ -28,6 +28,8 @@ function App() {
   const [selectedBondItem, setSelectedBondItem] = useState<{ key: number; value: string }[]>([]);
 
 	let counter: number = 0;
+  let contractBTFactory: ethers.Contract;
+  let contractBM: ethers.Contract;
 
 	const showLoading = (shouldShow: boolean) => {
 		if (shouldShow) {
@@ -66,14 +68,14 @@ function App() {
 
     if (library == undefined) {
       console.log("library undefined")
-      const contractBTFactory = getBondTokenFactoryContract(simpleRpcProvider)
+      contractBTFactory = getBondTokenFactoryContract(simpleRpcProvider)
       console.log(contractBTFactory)
-      const contractBM : ethers.Contract = getBondMakerContract(simpleRpcProvider)
+      contractBM = getBondMakerContract(simpleRpcProvider)
       console.log(contractBM)
     } else {
       console.log("library.signer")
-      const contractBTFactory = getBondTokenFactoryContract(library.getSigner())
-      const contractBM = getBondMakerContract(library.getSigner())
+      contractBTFactory = getBondTokenFactoryContract(library.getSigner())
+      contractBM = getBondMakerContract(library.getSigner())
     }
 	}, []);
 
@@ -119,19 +121,46 @@ function App() {
     setSelectedBondIndex(selectedIndex);
   }
 
+  async function createBondToken() {
+    if (!active) {
+      alert("Please connect metamask");
+    } else {
+      try {
+        if (contractBM == undefined) {
+          if (library) {
+            console.log('library is defined')
+            contractBM = getBondMakerContract(library.getSigner())
+            const newBond = await contractBM.registerNewBond(
+              "Test", 
+              "Test", 
+              1000,
+              1,
+              2,
+              9, //maturity
+              0
+            );
+            console.log(newBond)
+          }
+        }  
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+
   async function connect() {
     try {
       await activate(injected)
-    } catch (ex) {
-      console.log(ex)
+    } catch (err) {
+      console.log(err)
     }
   }
 
   async function disconnect() {
     try {
       deactivate()
-    } catch (ex) {
-      console.log(ex)
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -223,24 +252,34 @@ function App() {
 						</Col>
 					</Row>
           <Row>
-            <Container>
-              <Col>
-                <Container className="section">
-                  <div className="section">
-                    <Button onClick={connect} className="bg-blue-600 ">Connect to MetaMask</Button>
-                    {active ? <span>Connected with <b>{account}</b></span> : <span>Not connected</span>}
-                  </div>
-                </Container>
-              </Col>
-              <Col>
-                <Container className="section">
-                  <div className="section">
-                    <Button onClick={disconnect} className="bg-blue-600 ">Disconnect
-                    </Button>
-                  </div>
-                </Container>
-              </Col>
-            </Container>
+            <Col>
+              <Container className="section">
+                <Row>
+                  <Col>
+                      <div className="section">
+                        <Button onClick={connect} className="bg-blue-600 ">Connect to MetaMask</Button>
+                      </div>
+                      <div className="section">
+                        {active ? 
+                        <span>Connected with <b>{account}</b></span>
+                         : <span>Not connected</span>}
+                      </div>
+                  </Col>
+                  <Col>
+                      <div className="section">
+                        <Button onClick={disconnect} className="bg-blue-600 ">Disconnect
+                        </Button>
+                      </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Button onClick={createBondToken} className="bg-white-600 ">
+                      Create Bond Token</Button>
+                  </Col>
+                </Row>
+              </Container>
+            </Col>
           </Row>
         </Container>
 			</div>
