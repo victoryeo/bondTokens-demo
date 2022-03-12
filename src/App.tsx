@@ -8,11 +8,12 @@ import { BeatLoader } from "react-spinners";
 import { useWeb3React } from "@web3-react/core"
 import { Web3Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
+import { TransactionResponse, 
+  TransactionReceipt } from "@ethersproject/abstract-provider";
 import { injected, getBondTokenFactoryContract,
   getBondMakerContract } from "./utility/web3util"
 import { simpleRpcProvider } from './utility/providers'
 import "./App.css";
-import { setConstantValue } from "typescript";
 
 const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 4.5% Maturity January 2035",
@@ -27,7 +28,8 @@ function App() {
 	const [bondItems, setBondItems] = useState<{ key: number; value: string }[]>([]);
   const [selectedBondIndex, setSelectedBondIndex] = useState<number>(0);
   const [selectedBondItem, setSelectedBondItem] = useState<{ key: number; value: string }[]>([]);
-  const [bondTokenInfo, setBondTokenInfo] = useState<string>("")
+  const [bondTokenHashInfo, setBondTokenHashInfo] = useState<string>("")
+  const [bondID, setBondID] = useState<string>("")
 
 	let counter: number = 0;
   let contractBTFactory: ethers.Contract;
@@ -54,7 +56,7 @@ function App() {
     const bondList = JSON.parse(bondJson);
     setBondItems(
       Object.entries(bondList).map(([keyIndex, value]) => {
-        console.log(keyIndex)
+        //console.log(keyIndex)
         const key = parseInt(keyIndex, 10);
         return {
           key,
@@ -74,12 +76,30 @@ function App() {
       console.log(contractBTFactory)
       contractBM = getBondMakerContract(simpleRpcProvider)
       console.log(contractBM)
+      simpleRpcProvider.on('LogRegisterNewBond', (eventResult) => {
+        console.log({eventResult})
+      })
+      simpleRpcProvider.on('block', () => {
+        //console.log('update balance...')
+      })
+      simpleRpcProvider.on('blockNumber', (blockNumber) => {
+        console.log({blockNumber})
+    })
     } else {
       console.log("library.signer")
       contractBTFactory = getBondTokenFactoryContract(library.getSigner())
       contractBM = getBondMakerContract(library.getSigner())
+      library.on('LogRegisterNewBond', (eventResult) => {
+        console.log({eventResult})  
+      })
+      library.on('block', () => {
+        //console.log('update balance...')
+      })
+      library.on('blockNumber', (blockNumber) => {
+        console.log({blockNumber})
+    })
     }
-	}, []);
+	}, [library]);
 
 	const btnAddOnClick = async () => {
 		if (investAmountToAdd) {
@@ -124,7 +144,7 @@ function App() {
   }
 
   async function mintBondToken() {
-    if (bondTokenInfo == "") {
+    if (bondTokenHashInfo == "") {
       alert("Please create bond token contract before minting");
     }
   }
@@ -138,7 +158,7 @@ function App() {
           if (library) {
             console.log('library is defined')
             contractBM = getBondMakerContract(library.getSigner())
-            const newBond = await contractBM.registerNewBond(
+            const newBond: TransactionResponse = await contractBM.registerNewBond(
               "Test", 
               "Test", 
               1000,
@@ -148,7 +168,16 @@ function App() {
               0
             );
             console.log(newBond)
-            setBondTokenInfo(`Transaction Hash ${newBond.hash}`)
+            setBondTokenHashInfo(`Transaction Hash ${newBond.hash}`)
+            // what is res type ?
+            const res: any = await newBond.wait();
+            //second event is the LogRegisterNewBond event
+            console.log(res)
+            console.log(res.events[2].topics[1])
+            setBondID(res.events[2].topics[1])
+            // after wait, get Transaction receipt
+            const tReceipt: TransactionReceipt = await library.getTransactionReceipt(newBond.hash)
+            console.log(tReceipt)
           }
         }  
       } catch (err) {
@@ -288,7 +317,14 @@ function App() {
                       Create Bond Token Contract</Button>
                   </Col>
                   <Col>
-                    <span>{bondTokenInfo}</span>
+                    <span>{bondTokenHashInfo}</span>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col></Col>
+                  <Col>
+                    <div>Bond Token ID</div>
+                    <span>{bondID}</span>
                   </Col>
                 </Row>
                 <Row>
