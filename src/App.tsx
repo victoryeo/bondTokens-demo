@@ -12,6 +12,7 @@ import { injected, getBondTokenFactoryContract,
   getBondMakerContract } from "./utility/web3util"
 import { simpleRpcProvider } from './utility/providers'
 import "./App.css";
+import { setConstantValue } from "typescript";
 
 const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 4.5% Maturity January 2035",
@@ -26,6 +27,7 @@ function App() {
 	const [bondItems, setBondItems] = useState<{ key: number; value: string }[]>([]);
   const [selectedBondIndex, setSelectedBondIndex] = useState<number>(0);
   const [selectedBondItem, setSelectedBondItem] = useState<{ key: number; value: string }[]>([]);
+  const [bondTokenInfo, setBondTokenInfo] = useState<string>("")
 
 	let counter: number = 0;
   let contractBTFactory: ethers.Contract;
@@ -140,6 +142,7 @@ function App() {
               0
             );
             console.log(newBond)
+            setBondTokenInfo(`Transaction Hash ${newBond.hash}`)
           }
         }  
       } catch (err) {
@@ -276,6 +279,9 @@ function App() {
                   <Col>
                     <Button onClick={createBondToken} className="bg-white-600 ">
                       Create Bond Token</Button>
+                  </Col>
+                  <Col>
+                    <span>{bondTokenInfo}</span>
                   </Col>
                 </Row>
               </Container>
