@@ -123,9 +123,15 @@ function App() {
     setSelectedBondIndex(selectedIndex);
   }
 
+  async function mintBondToken() {
+    if (bondTokenInfo == "") {
+      alert("Please create bond token contract before minting");
+    }
+  }
+
   async function createBondToken() {
     if (!active) {
-      alert("Please connect metamask");
+      alert("Please connect MetaMask wallet");
     } else {
       try {
         if (contractBM == undefined) {
@@ -254,6 +260,7 @@ function App() {
 							</Container>
 						</Col>
 					</Row>
+          <hr></hr>
           <Row>
             <Col>
               <Container className="section">
@@ -278,10 +285,19 @@ function App() {
                 <Row>
                   <Col>
                     <Button onClick={createBondToken} className="bg-white-600 ">
-                      Create Bond Token</Button>
+                      Create Bond Token Contract</Button>
                   </Col>
                   <Col>
                     <span>{bondTokenInfo}</span>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Button onClick={mintBondToken} className="bg-white-600 ">
+                      Mint Bond Token</Button>
+                  </Col>
+                  <Col>
+                    <span></span>
                   </Col>
                 </Row>
               </Container>
