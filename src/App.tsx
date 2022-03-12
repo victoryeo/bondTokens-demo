@@ -29,6 +29,7 @@ function App() {
   const [selectedBondIndex, setSelectedBondIndex] = useState<number>(0);
   const [selectedBondItem, setSelectedBondItem] = useState<{ key: number; value: string }[]>([]);
   const [bondTokenHashInfo, setBondTokenHashInfo] = useState<string>("")
+  const [bondMintingHashInfo, setBondMintingHashInfo] = useState<string>("")
   const [bondID, setBondID] = useState<string>("")
 
 	let counter: number = 0;
@@ -146,6 +147,21 @@ function App() {
   async function mintBondToken() {
     if (bondTokenHashInfo == "") {
       alert("Please create bond token contract before minting");
+    } else {
+      try {
+        if (contractBM == undefined) {
+          if (library) {
+            contractBM = getBondMakerContract(library.getSigner())
+            const newIssue = await contractBM.issueNewBonds(
+              bondID, 1000
+            )
+            console.log(newIssue)
+            setBondMintingHashInfo(`Transaction Hash ${newIssue.hash}`)
+          }
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 
@@ -333,7 +349,7 @@ function App() {
                       Mint Bond Token</Button>
                   </Col>
                   <Col>
-                    <span></span>
+                    <span>{bondMintingHashInfo}</span>
                   </Col>
                 </Row>
               </Container>
