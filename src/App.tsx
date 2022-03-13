@@ -153,10 +153,15 @@ function App() {
           if (library) {
             contractBM = getBondMakerContract(library.getSigner())
             const newIssue = await contractBM.issueNewBonds(
-              bondID, 1000
+              bondID, 
+              1000   // number of tokens to be minted
             )
             console.log(newIssue)
             setBondMintingHashInfo(`Transaction Hash ${newIssue.hash}`)
+            const res: any = await newIssue.wait();
+            console.log(res)
+            console.log(res.events[2].topics[2])
+            console.log(res.events[2].data)
           }
         }
       } catch (err) {
@@ -177,7 +182,7 @@ function App() {
             const newBond: TransactionResponse = await contractBM.registerNewBond(
               "Test", 
               "Test", 
-              1000,
+              1000,   // face value
               1,
               2,
               9, //maturity
