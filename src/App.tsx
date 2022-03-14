@@ -106,15 +106,15 @@ function App() {
 
 	const btnAddOnClick = async () => {
 		if (investAmountToAdd) {
-      const investNumber = parseInt(investAmountToAdd, 10);
-      console.log(investNumber)
-      if (!isNaN(investNumber)){
+      const investAmount = parseInt(investAmountToAdd, 10);
+      console.log(investAmount)
+      if (!isNaN(investAmount)){
         showLoading(true);
         try {
           console.log('btnAddOnClick');
-          alert(`You invest $${investNumber}`)
-          setInvestNumber(investNumber)
-          transferBondToken()
+          alert(`You invest $${investAmount}`)
+          setInvestNumber(investAmount)
+          transferBondToken(investAmount)
           // call web3
         } catch (err) {
           console.log(err);
@@ -148,10 +148,10 @@ function App() {
     setSelectedBondIndex(selectedIndex);
   }
 
-  async function transferBondToken() {
+  async function transferBondToken(investAmount: number) {
     console.log('transferBondToken')
     console.log(account)
-    console.log(investNumber)
+    console.log(investAmount)
     if (bondTokenHashInfo == "") {
       alert("Bond token contract is not available.\nPlease deploy bond token contract");
     } else {
@@ -162,7 +162,7 @@ function App() {
             const newTransfer = await contractBM.transferBond(
               bondID,
               account,
-              investNumber/1000
+              investAmount/1000
             )
             console.log(newTransfer)
             setBondInvestmentHashInfo(`Investment Hash ${newTransfer.hash}`)
