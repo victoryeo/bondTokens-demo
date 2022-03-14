@@ -111,6 +111,7 @@ function App() {
         try {
           console.log('btnAddOnClick');
           alert(`You invest $${investNumber}`)
+          transferBondToken()
           // call web3
         } catch (err) {
           console.log(err);
@@ -144,6 +145,10 @@ function App() {
     setSelectedBondIndex(selectedIndex);
   }
 
+  async function transferBondToken() {
+    console.log('transferBondToken')
+  }
+
   async function mintBondToken() {
     if (bondTokenHashInfo == "") {
       alert("Please create bond token contract before minting");
@@ -161,7 +166,7 @@ function App() {
             const res: any = await newIssue.wait();
             console.log(res)
             console.log(res.events[2].topics[2])
-            console.log(res.events[2].data)
+            console.log(res.events[2].data)  //data contains the bond FV
           }
         }
       } catch (err) {
