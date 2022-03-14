@@ -153,7 +153,7 @@ function App() {
     console.log(account)
     console.log(investAmount)
     if (bondTokenHashInfo == "") {
-      alert("Bond token contract is not available.\nPlease deploy bond token contract");
+      alert("Bond token contract is not available.\nPlease deploy bond token contract\nand Please mint bond token");
     } else {
       try {
         if (contractBM == undefined) {
@@ -338,7 +338,7 @@ function App() {
 									<Col>
 										<div className="section">
 											<div>Minimum amount of $1000</div>
-                      <div>Enter numeric value only</div>
+                      <div>Enter numeric value of multiples of $1000</div>
                       <div>{bondInvestmentHashInfo}</div>
 										</div>
 									</Col>
