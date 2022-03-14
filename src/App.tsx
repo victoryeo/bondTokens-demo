@@ -22,7 +22,7 @@ const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 function App() {
   const { active, account, library, activate, deactivate } = useWeb3React<Web3Provider>()
 
-	const [address, setAddress] = useState<string>("");
+	const [walletAddress, setWalletAddress] = useState<string>("");
 	const [investAmountToAdd, setInvestAmountToAdd] = useState<string>("");
 	const [showOverlay, setShowOverlay] = useState<boolean>(false);
 	const [bondItems, setBondItems] = useState<{ key: number; value: string }[]>([]);
@@ -30,7 +30,9 @@ function App() {
   const [selectedBondItem, setSelectedBondItem] = useState<{ key: number; value: string }[]>([]);
   const [bondTokenHashInfo, setBondTokenHashInfo] = useState<string>("")
   const [bondMintingHashInfo, setBondMintingHashInfo] = useState<string>("")
+  const [bondInvestmentHashInfo, setBondInvestmentHashInfo] = useState<string>("")
   const [bondID, setBondID] = useState<string>("")
+  const [investNumber, setInvestNumber] = useState<number>(0)
 
 	let counter: number = 0;
   let contractBTFactory: ethers.Contract;
@@ -111,6 +113,7 @@ function App() {
         try {
           console.log('btnAddOnClick');
           alert(`You invest $${investNumber}`)
+          setInvestNumber(investNumber)
           transferBondToken()
           // call web3
         } catch (err) {
@@ -147,6 +150,29 @@ function App() {
 
   async function transferBondToken() {
     console.log('transferBondToken')
+    console.log(account)
+    console.log(investNumber)
+    if (bondTokenHashInfo == "") {
+      alert("Bond token contract is not available.\nPlease deploy bond token contract");
+    } else {
+      try {
+        if (contractBM == undefined) {
+          if (library) {
+            contractBM = getBondMakerContract(library.getSigner())
+            const newTransfer = await contractBM.transferBond(
+              bondID,
+              account,
+              investNumber/1000
+            )
+            console.log(newTransfer)
+            setBondInvestmentHashInfo(`Investment Hash ${newTransfer.hash}`)
+            const res: any = await newTransfer.wait();
+          }
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
   }
 
   async function mintBondToken() {
@@ -165,7 +191,11 @@ function App() {
             setBondMintingHashInfo(`Transaction Hash ${newIssue.hash}`)
             const res: any = await newIssue.wait();
             console.log(res)
-            console.log(res.events[2].topics[2])
+            console.log(res.events[2].topics[2])  //the wallet address
+            let test2 = res.events[2].topics[2]
+            // remove leading zeros
+            test2 = test2.replace(/^(0x)0+((\w{4})+)$/, "$1$2")
+            setWalletAddress(test2)
             console.log(res.events[2].data)  //data contains the bond FV
           }
         }
@@ -309,6 +339,7 @@ function App() {
 										<div className="section">
 											<div>Minimum amount of $1000</div>
                       <div>Enter numeric value only</div>
+                      <div>{bondInvestmentHashInfo}</div>
 										</div>
 									</Col>
 								</Row>
@@ -360,6 +391,13 @@ function App() {
                   </Col>
                   <Col>
                     <span>{bondMintingHashInfo}</span>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col></Col>
+                  <Col>
+                    <div>Wallet address</div>
+                    <span>{walletAddress}</span>
                   </Col>
                 </Row>
               </Container>
