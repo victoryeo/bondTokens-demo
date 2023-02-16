@@ -14,6 +14,7 @@ import { injected, getBondTokenFactoryContract,
   getBondMakerContract } from "./utility/web3util"
 import { simpleRpcProvider } from './utility/providers'
 import "./App.css";
+import Home from './components/Home/Home'
 
 const bondDetail = ["Coupon 3.5% Maturity June 2025 ",
 "Coupon 4.5% Maturity January 2035",
@@ -260,7 +261,8 @@ function App() {
 
 	return (
 		<LoadingOverlay active={showOverlay} spinner={<BeatLoader color="#FFFFFF" />}>
-			<div className="App">
+      <Home/>
+      <div className="App">
 				<Container>
 					<Row>
 						<Col>
