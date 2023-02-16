@@ -7,11 +7,11 @@ import Web3 from 'web3'
 import contracts from '../config/constants/contracts'
 
 const api_key = process.env.REACT_APP_API_KEY
-const rinkeby = `https://eth-rinkeby.alchemyapi.io/v2/${api_key}`
-const RINKEBY = 4
+const goerli = `https://eth-goerli.g.alchemyapi.io/v2/${api_key}`
+const GOERLI = 5
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [RINKEBY],   //rinkeby
+  supportedChainIds: [GOERLI],   //rinkeby
 })
 
 export function getLibrary(provider:any): Web3Provider {
@@ -35,11 +35,11 @@ const getContract = (abi: any, address: string, signer: ethers.Signer|ethers.pro
 export const getBondTokenFactoryContract = (signer: ethers.Signer|ethers.providers.Provider) => {
   console.log("getBondTokenFactoryContract")
   console.log(signer)
-  return getContract(BondTokenFactoryAbi, contracts.bondTokenFactory[RINKEBY], signer)
+  return getContract(BondTokenFactoryAbi, contracts.bondTokenFactory[GOERLI], signer)
 }
 
 export const getBondMakerContract = (signer: ethers.Signer|ethers.providers.Provider) : ethers.Contract => {
   console.log("getBondMakerContract")
   console.log(signer)
-  return getContract(BondMakerAbi, contracts.bondMaker[RINKEBY], signer)
+  return getContract(BondMakerAbi, contracts.bondMaker[GOERLI], signer)
 }
